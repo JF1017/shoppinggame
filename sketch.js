@@ -1,16 +1,39 @@
 const MAX_ITEMS = 10;
+const BUDGET = 6;
 const ITEM_DATA = {
-  carrot_item: { price: 1, imageKey: "carrot", name: "carrot" },
-  cake_item: { price: 2, imageKey: "cake", name: "cake" },
-  cheese_item: { price: 2, imageKey: "cheese", name: "cheese" },
-  jam_item: { price: 3, imageKey: "jam", name: "jam" },
-  ball_item: { price: 4, imageKey: "basketball", name: "ball" },
-  lamp_item: { price: 5, imageKey: "lamp", name: "lamp" },
-  mug_item: { price: 3, imageKey: "bear", name: "mug" },
-  clip_item: { price: 2, imageKey: "clip", name: "clip" }
+  carrot_item: { price: 1, imageKey: "carrot", name: "carrot", firstSound: "k", soundCount: 5 },
+  cake_item: { price: 2, imageKey: "cake", name: "cake", firstSound: "k", soundCount: 3 },
+  cheese_item: { price: 2, imageKey: "cheese", name: "cheese", firstSound: "ch", soundCount: 3 },
+  jam_item: { price: 3, imageKey: "jam", name: "jam", firstSound: "j", soundCount: 3 },
+  ball_item: { price: 4, imageKey: "basketball", name: "ball", firstSound: "b", soundCount: 3 },
+  lamp_item: { price: 5, imageKey: "lamp", name: "lamp", firstSound: "l", soundCount: 4 },
+  mug_item: { price: 3, imageKey: "bear", name: "mug", firstSound: "m", soundCount: 3 },
+  clip_item: { price: 2, imageKey: "clip", name: "clip", firstSound: "k", soundCount: 4 }
 };
 
+const MISSIONS = [
+  {
+    text: "Buy something that begins with /k/.",
+    success: "Good match. That word begins with /k/.",
+    hint: "Look for a word that starts with the /k/ sound.",
+    test: (item) => item.firstSound === "k"
+  },
+  {
+    text: "Buy something with 3 sounds.",
+    success: "Good listening. That word has 3 sounds.",
+    hint: "Open Sound clues and count the sounds.",
+    test: (item) => item.soundCount === 3
+  },
+  {
+    text: "Buy something with 4 sounds and stay within budget.",
+    success: "List complete. Now add the prices and check your total.",
+    hint: "Find a 4-sound word, then check if its price fits the budget.",
+    test: (item) => item.soundCount === 4
+  }
+];
+
 let currentSlot;
+let missionIndex;
 let total;
 let answerHidden = true;
 let pictures = [];
@@ -42,6 +65,7 @@ function setup() {
   imageMode(CENTER);
 
   currentSlot = 0;
+  missionIndex = 0;
   total = 0;
   updateInterface();
 }
@@ -87,11 +111,29 @@ function selectFunction(el) {
     return;
   }
 
+  const currentMission = MISSIONS[missionIndex];
+
+  if (!currentMission) {
+    setStatusMessage("Shopping list complete. Clear the cart to try the mission again.");
+    return;
+  }
+
+  if (!currentMission.test(selected)) {
+    setStatusMessage(`${capitalize(selected.name)} does not match this clue. ${currentMission.hint}`);
+    return;
+  }
+
+  if (total + selected.price > BUDGET) {
+    setStatusMessage(`Math check: ${capitalize(selected.name)} costs $${selected.price}. That would make $${total + selected.price}, over the $${BUDGET} budget.`);
+    return;
+  }
+
   currentSlot += 1;
   total += selected.price;
   formulaParts.push(selected.price);
   pictures.push(new Picture(currentSlot, assets[selected.imageKey]));
-  setStatusMessage(`Added ${selected.name} for ${selected.price} dollars.`);
+  missionIndex += 1;
+  setStatusMessage(`${currentMission.success} Added ${selected.name} for $${selected.price}.`);
   updateInterface();
 }
 
@@ -105,8 +147,9 @@ function clearItems() {
   formulaParts = [];
   total = 0;
   currentSlot = 0;
+  missionIndex = 0;
   answerHidden = true;
-  setStatusMessage("Cart cleared. Pick a new item to practice addition.");
+  setStatusMessage("Cart cleared. Start with clue 1: choose an item that begins with /k/.");
   updateInterface();
 }
 
@@ -115,6 +158,8 @@ function updateInterface() {
   const totalPrice = document.getElementById("total_price");
   const answerButton = document.getElementById("show_answer_button");
   const cartCount = document.getElementById("cart_count");
+  const budgetBadge = document.getElementById("budget_badge");
+  const feedback = document.getElementById("mission_feedback");
 
   if (formula) {
     formula.innerHTML = formulaParts.length ? formulaParts.join(" + ") : "Choose an item";
@@ -130,7 +175,27 @@ function updateInterface() {
   }
 
   if (cartCount) {
-    cartCount.innerHTML = `${currentSlot} of ${MAX_ITEMS} selected`;
+    cartCount.innerHTML = `${currentSlot} of ${MISSIONS.length} clues complete`;
+  }
+
+  if (budgetBadge) {
+    budgetBadge.innerHTML = `Budget left: $${BUDGET - total}`;
+  }
+
+  for (let i = 0; i < MISSIONS.length; i++) {
+    const missionItem = document.getElementById(`mission_${i}`);
+
+    if (missionItem) {
+      missionItem.classList.toggle("is_complete", i < missionIndex);
+      missionItem.classList.toggle("is_active", i === missionIndex);
+      missionItem.setAttribute("aria-current", i === missionIndex ? "step" : "false");
+    }
+  }
+
+  if (feedback && missionIndex >= MISSIONS.length) {
+    feedback.innerHTML = `Shopping list complete. Total spent: $${total}.`;
+  } else if (feedback && currentSlot === 0) {
+    feedback.innerHTML = "Start with clue 1: choose an item that begins with /k/.";
   }
 }
 
@@ -140,6 +205,16 @@ function setStatusMessage(message) {
   if (status) {
     status.innerHTML = message;
   }
+
+  const feedback = document.getElementById("mission_feedback");
+
+  if (feedback) {
+    feedback.innerHTML = message;
+  }
+}
+
+function capitalize(word) {
+  return word.charAt(0).toUpperCase() + word.slice(1);
 }
 
 function getCanvasWidth() {

@@ -202,6 +202,13 @@
         padding: 12px;
       }
 
+      .item_topline {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+      }
+
       .item_name {
         margin: 0;
         color: #86378f;
@@ -217,6 +224,26 @@
         font-size: 0.9rem;
         font-weight: 700;
         line-height: 1.35;
+      }
+
+      .phonics_details {
+        border-top: 1px solid rgba(35, 50, 65, 0.08);
+        padding-top: 4px;
+      }
+
+      .phonics_details summary {
+        width: fit-content;
+        color: #2e7d66;
+        font-size: 0.9rem;
+        font-weight: 900;
+        line-height: 1.35;
+        cursor: pointer;
+      }
+
+      .phonics_details summary:focus-visible {
+        outline: 3px solid rgba(248, 200, 78, 0.75);
+        outline-offset: 2px;
+        border-radius: 6px;
       }
 
       .price_tag {
@@ -236,6 +263,89 @@
 
       .cart_panel {
         padding: 18px;
+      }
+
+      .mission_panel {
+        display: grid;
+        gap: 12px;
+        margin-bottom: 16px;
+        padding: 14px;
+        border: 3px solid rgba(62, 154, 114, 0.2);
+        border-radius: 8px;
+        background: #ffffff;
+      }
+
+      .mission_header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+      }
+
+      .budget_badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 100px;
+        padding: 8px 12px;
+        border-radius: 999px;
+        color: #172636;
+        background: var(--mustard);
+        font-weight: 900;
+      }
+
+      .mission_list {
+        display: grid;
+        gap: 8px;
+        margin: 0;
+        padding: 0;
+        list-style: none;
+      }
+
+      .mission_item {
+        display: grid;
+        grid-template-columns: auto 1fr;
+        gap: 8px;
+        align-items: start;
+        color: #40556a;
+        font-size: 0.98rem;
+        font-weight: 800;
+        line-height: 1.35;
+      }
+
+      .mission_check {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 24px;
+        height: 24px;
+        border: 2px solid rgba(35, 50, 65, 0.18);
+        border-radius: 999px;
+        color: transparent;
+        background: #f6fbff;
+        font-size: 0.9rem;
+        font-weight: 900;
+      }
+
+      .mission_item.is_active {
+        color: #162635;
+      }
+
+      .mission_item.is_complete .mission_check {
+        border-color: var(--leaf);
+        color: #ffffff;
+        background: var(--leaf);
+      }
+
+      .mission_feedback {
+        margin: 0;
+        min-height: 48px;
+        padding: 10px 12px;
+        border-radius: 8px;
+        color: #253445;
+        background: var(--sky);
+        font-weight: 800;
+        line-height: 1.4;
       }
 
       .canvas_frame {
@@ -397,11 +507,11 @@
         <div>
           <p class="eyebrow">Daily grocery shopping</p>
           <h1 id="page_title">Grocery Math Cart</h1>
-          <p class="intro">Choose items for your cart, read the prices, and practice adding lots of friendly numbers together.</p>
+          <p class="intro">Use word clues to choose groceries, then keep the cart within budget by adding the prices.</p>
         </div>
-        <div class="lesson_badge" aria-label="Addition practice with up to ten items">
-          <strong>10</strong>
-          <span>cart spots</span>
+        <div class="lesson_badge" aria-label="Three word clues and a six dollar budget">
+          <strong>$6</strong>
+          <span>budget mission</span>
         </div>
       </section>
 
@@ -418,9 +528,14 @@
                 <img src="images/carrot.png" alt="Carrot">
               </button>
               <div class="item_details">
-                <p class="item_name">carrot</p>
-                <p class="phonym">/k/ /ā/ /r/ /ŭ/ /t/</p>
-                <p class="price_tag">$1</p>
+                <div class="item_topline">
+                  <p class="item_name">carrot</p>
+                  <p class="price_tag">$1</p>
+                </div>
+                <details class="phonics_details">
+                  <summary>Sound clues</summary>
+                  <p class="phonym">k - short a - r - short u - t</p>
+                </details>
               </div>
             </article>
 
@@ -429,9 +544,14 @@
                 <img src="images/cake.png" alt="Cake">
               </button>
               <div class="item_details">
-                <p class="item_name">cake</p>
-                <p class="phonym">/k/ /ā/ /k/</p>
-                <p class="price_tag">$2</p>
+                <div class="item_topline">
+                  <p class="item_name">cake</p>
+                  <p class="price_tag">$2</p>
+                </div>
+                <details class="phonics_details">
+                  <summary>Sound clues</summary>
+                  <p class="phonym">k - long a - k</p>
+                </details>
               </div>
             </article>
 
@@ -440,9 +560,14 @@
                 <img src="images/cheese.png" alt="Cheese">
               </button>
               <div class="item_details">
-                <p class="item_name">cheese</p>
-                <p class="phonym">/ch/ /ē/ /z/</p>
-                <p class="price_tag">$2</p>
+                <div class="item_topline">
+                  <p class="item_name">cheese</p>
+                  <p class="price_tag">$2</p>
+                </div>
+                <details class="phonics_details">
+                  <summary>Sound clues</summary>
+                  <p class="phonym">ch - long e - z</p>
+                </details>
               </div>
             </article>
 
@@ -451,9 +576,14 @@
                 <img src="images/jam.png" alt="Jam">
               </button>
               <div class="item_details">
-                <p class="item_name">jam</p>
-                <p class="phonym">/j/ /ă/ /m/</p>
-                <p class="price_tag">$3</p>
+                <div class="item_topline">
+                  <p class="item_name">jam</p>
+                  <p class="price_tag">$3</p>
+                </div>
+                <details class="phonics_details">
+                  <summary>Sound clues</summary>
+                  <p class="phonym">j - short a - m</p>
+                </details>
               </div>
             </article>
 
@@ -462,9 +592,14 @@
                 <img src="images/basketball.png" alt="Basketball">
               </button>
               <div class="item_details">
-                <p class="item_name">ball</p>
-                <p class="phonym">/b/ /aw/ /l/</p>
-                <p class="price_tag">$4</p>
+                <div class="item_topline">
+                  <p class="item_name">ball</p>
+                  <p class="price_tag">$4</p>
+                </div>
+                <details class="phonics_details">
+                  <summary>Sound clues</summary>
+                  <p class="phonym">b - aw - l</p>
+                </details>
               </div>
             </article>
 
@@ -473,9 +608,14 @@
                 <img src="images/lamp.png" alt="Lamp">
               </button>
               <div class="item_details">
-                <p class="item_name">lamp</p>
-                <p class="phonym">/l/ /ă/ /m/ /p/</p>
-                <p class="price_tag">$5</p>
+                <div class="item_topline">
+                  <p class="item_name">lamp</p>
+                  <p class="price_tag">$5</p>
+                </div>
+                <details class="phonics_details">
+                  <summary>Sound clues</summary>
+                  <p class="phonym">l - short a - m - p</p>
+                </details>
               </div>
             </article>
 
@@ -484,9 +624,14 @@
                 <img src="images/bear.png" alt="Mug">
               </button>
               <div class="item_details">
-                <p class="item_name">mug</p>
-                <p class="phonym">/m/ /ŭ/ /g/</p>
-                <p class="price_tag">$3</p>
+                <div class="item_topline">
+                  <p class="item_name">mug</p>
+                  <p class="price_tag">$3</p>
+                </div>
+                <details class="phonics_details">
+                  <summary>Sound clues</summary>
+                  <p class="phonym">m - short u - g</p>
+                </details>
               </div>
             </article>
 
@@ -495,9 +640,14 @@
                 <img src="images/clip.png" alt="Clip">
               </button>
               <div class="item_details">
-                <p class="item_name">clip</p>
-                <p class="phonym">/k/ /l/ /ĭ/ /p/</p>
-                <p class="price_tag">$2</p>
+                <div class="item_topline">
+                  <p class="item_name">clip</p>
+                  <p class="price_tag">$2</p>
+                </div>
+                <details class="phonics_details">
+                  <summary>Sound clues</summary>
+                  <p class="phonym">k - l - short i - p</p>
+                </details>
               </div>
             </article>
           </div>
@@ -508,6 +658,28 @@
             <h2>Your Shopping Cart</h2>
             <span class="limit_note">Add the prices together</span>
           </div>
+
+          <section class="mission_panel" aria-labelledby="mission_title">
+            <div class="mission_header">
+              <h2 id="mission_title">Today's Shopping List</h2>
+              <span class="budget_badge" id="budget_badge">Budget: $6</span>
+            </div>
+            <ul class="mission_list" id="mission_list">
+              <li class="mission_item is_active" id="mission_0">
+                <span class="mission_check" aria-hidden="true">✓</span>
+                <span>Buy something that begins with /k/.</span>
+              </li>
+              <li class="mission_item" id="mission_1">
+                <span class="mission_check" aria-hidden="true">✓</span>
+                <span>Buy something with 3 sounds.</span>
+              </li>
+              <li class="mission_item" id="mission_2">
+                <span class="mission_check" aria-hidden="true">✓</span>
+                <span>Buy something with 4 sounds and stay within budget.</span>
+              </li>
+            </ul>
+            <p class="mission_feedback" id="mission_feedback" aria-live="polite">Start with clue 1: choose an item that begins with /k/.</p>
+          </section>
 
           <div class="canvas_frame">
             <div id="canvas_container" aria-label="A shopping cart showing selected items"></div>
