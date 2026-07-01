@@ -121,6 +121,12 @@
         padding: 18px;
       }
 
+      .shopping_column {
+        display: grid;
+        gap: 16px;
+        align-items: start;
+      }
+
       .panel_header {
         display: flex;
         align-items: center;
@@ -268,11 +274,11 @@
       .mission_panel {
         display: grid;
         gap: 12px;
-        margin-bottom: 16px;
         padding: 14px;
         border: 3px solid rgba(62, 154, 114, 0.2);
         border-radius: 8px;
-        background: #ffffff;
+        background: rgba(255, 255, 255, 0.94);
+        box-shadow: var(--shadow);
       }
 
       .mission_header {
@@ -653,12 +659,7 @@
           </div>
         </div>
 
-        <div class="cart_panel">
-          <div class="panel_header">
-            <h2>Your Shopping Cart</h2>
-            <span class="limit_note">Add the prices together</span>
-          </div>
-
+        <div class="shopping_column">
           <section class="mission_panel" aria-labelledby="mission_title">
             <div class="mission_header">
               <h2 id="mission_title">Today's Shopping List</h2>
@@ -681,20 +682,27 @@
             <p class="mission_feedback" id="mission_feedback" aria-live="polite">Start with clue 1: choose an item that begins with /k/.</p>
           </section>
 
-          <div class="canvas_frame">
-            <div id="canvas_container" aria-label="A shopping cart showing selected items"></div>
-          </div>
+          <div class="cart_panel">
+            <div class="panel_header">
+              <h2>Your Shopping Cart</h2>
+              <span class="limit_note">Add the prices together</span>
+            </div>
 
-          <div class="math_bar">
-            <div id="total_cost" aria-live="polite">
-              <p>Total: <span id="formula">Choose an item</span> = <span id="total_price">?</span></p>
+            <div class="canvas_frame">
+              <div id="canvas_container" aria-label="A shopping cart showing selected items"></div>
             </div>
-            <div id="buttons">
-              <button class="primary_action" id="show_answer_button" onclick="showAnswer();">Show Answer</button>
-              <button class="secondary_action" id="clear_items" onclick="clearItems();">Clear Cart</button>
+
+            <div class="math_bar">
+              <div id="total_cost" aria-live="polite">
+                <p>Total: <span id="formula">Choose an item</span> = <span id="total_price">?</span></p>
+              </div>
+              <div id="buttons">
+                <button class="primary_action" id="show_answer_button" onclick="showAnswer();">Show Answer</button>
+                <button class="secondary_action" id="clear_items" onclick="clearItems();">Clear Cart</button>
+              </div>
             </div>
+            <p class="sr_only" id="status_message" aria-live="polite"></p>
           </div>
-          <p class="sr_only" id="status_message" aria-live="polite"></p>
         </div>
       </section>
     </main>
