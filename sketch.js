@@ -107,24 +107,24 @@ function selectFunction(el) {
   const selected = ITEM_DATA[el.value];
 
   if (!selected || currentSlot >= MAX_ITEMS) {
-    setStatusMessage("Your cart is full. Clear the cart to start a new shopping trip.");
+    setStatusMessage("Your cart is full. Clear the cart to start a new shopping trip.", "warning");
     return;
   }
 
   const currentMission = MISSIONS[missionIndex];
 
   if (!currentMission) {
-    setStatusMessage("Shopping list complete. Clear the cart to try the mission again.");
+    setStatusMessage("Shopping list complete. Clear the cart to try the mission again.", "success");
     return;
   }
 
   if (!currentMission.test(selected)) {
-    setStatusMessage(`${capitalize(selected.name)} does not match this clue. ${currentMission.hint}`);
+    setStatusMessage(`${capitalize(selected.name)} does not match this clue. ${currentMission.hint}`, "warning");
     return;
   }
 
   if (total + selected.price > BUDGET) {
-    setStatusMessage(`Math check: ${capitalize(selected.name)} costs $${selected.price}. That would make $${total + selected.price}, over the $${BUDGET} budget.`);
+    setStatusMessage(`Math check: ${capitalize(selected.name)} costs $${selected.price}. That would make $${total + selected.price}, over the $${BUDGET} budget.`, "warning");
     return;
   }
 
@@ -133,7 +133,7 @@ function selectFunction(el) {
   formulaParts.push(selected.price);
   pictures.push(new Picture(currentSlot, assets[selected.imageKey]));
   missionIndex += 1;
-  setStatusMessage(`${currentMission.success} Added ${selected.name} for $${selected.price}.`);
+  setStatusMessage(`${currentMission.success} Added ${selected.name} for $${selected.price}.`, "success");
   updateInterface();
 }
 
@@ -149,7 +149,7 @@ function clearItems() {
   currentSlot = 0;
   missionIndex = 0;
   answerHidden = true;
-  setStatusMessage("Cart cleared. Start with clue 1: choose an item that begins with /k/.");
+  setStatusMessage("Cart cleared. Start with clue 1: choose an item that begins with /k/.", "neutral");
   updateInterface();
 }
 
@@ -157,7 +157,6 @@ function updateInterface() {
   const formula = document.getElementById("formula");
   const totalPrice = document.getElementById("total_price");
   const answerButton = document.getElementById("show_answer_button");
-  const cartCount = document.getElementById("cart_count");
   const budgetBadge = document.getElementById("budget_badge");
   const feedback = document.getElementById("mission_feedback");
 
@@ -172,10 +171,6 @@ function updateInterface() {
   if (answerButton) {
     answerButton.innerHTML = answerHidden ? "Show Answer" : "Hide Answer";
     answerButton.setAttribute("aria-pressed", String(!answerHidden));
-  }
-
-  if (cartCount) {
-    cartCount.innerHTML = `${currentSlot} of ${MISSIONS.length} clues complete`;
   }
 
   if (budgetBadge) {
@@ -194,12 +189,14 @@ function updateInterface() {
 
   if (feedback && missionIndex >= MISSIONS.length) {
     feedback.innerHTML = `Shopping list complete. Total spent: $${total}.`;
+    setFeedbackState(feedback, "success");
   } else if (feedback && currentSlot === 0) {
     feedback.innerHTML = "Start with clue 1: choose an item that begins with /k/.";
+    setFeedbackState(feedback, "neutral");
   }
 }
 
-function setStatusMessage(message) {
+function setStatusMessage(message, state = "neutral") {
   const status = document.getElementById("status_message");
 
   if (status) {
@@ -210,7 +207,13 @@ function setStatusMessage(message) {
 
   if (feedback) {
     feedback.innerHTML = message;
+    setFeedbackState(feedback, state);
   }
+}
+
+function setFeedbackState(feedback, state) {
+  feedback.classList.toggle("is_warning", state === "warning");
+  feedback.classList.toggle("is_success", state === "success");
 }
 
 function capitalize(word) {

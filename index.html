@@ -57,7 +57,7 @@
         margin: 0 0 8px;
         color: var(--leaf);
         font-size: 0.92rem;
-        font-weight: 800;
+        font-weight: 700;
         letter-spacing: 0.08em;
         text-transform: uppercase;
       }
@@ -66,6 +66,7 @@
         margin: 0;
         color: #162635;
         font-size: clamp(2.15rem, 5vw, 4.1rem);
+        font-weight: 900;
         line-height: 1.02;
       }
 
@@ -74,6 +75,7 @@
         margin: 12px 0 0;
         color: #40556a;
         font-size: clamp(1rem, 2.2vw, 1.2rem);
+        font-weight: 400;
         line-height: 1.55;
       }
 
@@ -99,7 +101,7 @@
         margin-top: 6px;
         color: var(--muted);
         font-size: 0.95rem;
-        font-weight: 700;
+        font-weight: 500;
       }
 
       .game_layout {
@@ -139,13 +141,14 @@
         margin: 0;
         color: #1f3346;
         font-size: 1.35rem;
+        font-weight: 800;
         line-height: 1.2;
       }
 
       .limit_note {
         color: var(--muted);
         font-size: 0.92rem;
-        font-weight: 700;
+        font-weight: 500;
         white-space: nowrap;
       }
 
@@ -219,7 +222,7 @@
         margin: 0;
         color: #86378f;
         font-size: 1.2rem;
-        font-weight: 900;
+        font-weight: 800;
         line-height: 1.1;
         text-transform: capitalize;
       }
@@ -228,7 +231,7 @@
         margin: 0;
         color: #4f6174;
         font-size: 0.9rem;
-        font-weight: 700;
+        font-weight: 400;
         line-height: 1.35;
       }
 
@@ -241,7 +244,7 @@
         width: fit-content;
         color: #2e7d66;
         font-size: 0.9rem;
-        font-weight: 900;
+        font-weight: 600;
         line-height: 1.35;
         cursor: pointer;
       }
@@ -264,7 +267,7 @@
         color: #26303b;
         background: var(--mustard);
         font-size: 1rem;
-        font-weight: 900;
+        font-weight: 800;
       }
 
       .cart_panel {
@@ -294,10 +297,12 @@
         justify-content: center;
         min-width: 100px;
         padding: 8px 12px;
+        border: 2px solid rgba(248, 200, 78, 0.65);
         border-radius: 999px;
         color: #172636;
-        background: var(--mustard);
-        font-weight: 900;
+        background: #fff1b8;
+        font-weight: 700;
+        white-space: nowrap;
       }
 
       .mission_list {
@@ -315,7 +320,7 @@
         align-items: start;
         color: #40556a;
         font-size: 0.98rem;
-        font-weight: 800;
+        font-weight: 500;
         line-height: 1.35;
       }
 
@@ -330,11 +335,12 @@
         color: transparent;
         background: #f6fbff;
         font-size: 0.9rem;
-        font-weight: 900;
+        font-weight: 800;
       }
 
       .mission_item.is_active {
         color: #162635;
+        font-weight: 700;
       }
 
       .mission_item.is_complete .mission_check {
@@ -347,11 +353,24 @@
         margin: 0;
         min-height: 48px;
         padding: 10px 12px;
+        border: 2px solid transparent;
         border-radius: 8px;
         color: #253445;
         background: var(--sky);
-        font-weight: 800;
+        font-weight: 600;
         line-height: 1.4;
+      }
+
+      .mission_feedback.is_warning {
+        border-color: #c2410c;
+        color: #5f1609;
+        background: #ffd7cc;
+      }
+
+      .mission_feedback.is_success {
+        border-color: #2e7d66;
+        color: #123d30;
+        background: #d8f4df;
       }
 
       .canvas_frame {
@@ -392,7 +411,7 @@
         margin: 0;
         color: var(--ink);
         font-size: clamp(1.2rem, 2.6vw, 1.65rem);
-        font-weight: 900;
+        font-weight: 800;
         line-height: 1.4;
       }
 
@@ -427,7 +446,7 @@
         border-radius: 8px;
         padding: 0 18px;
         color: #172636;
-        font-weight: 900;
+        font-weight: 800;
         cursor: pointer;
         box-shadow: 0 10px 18px rgba(35, 50, 65, 0.14);
         transition: transform 160ms ease, box-shadow 160ms ease;
@@ -525,7 +544,7 @@
         <div class="shop_panel">
           <div class="panel_header">
             <h2>Pick Your Items</h2>
-            <span class="limit_note" id="cart_count">0 of 10 selected</span>
+            <span class="budget_badge" id="budget_badge">Budget left: $6</span>
           </div>
 
           <div id="items_grid" aria-label="Store items">
@@ -663,7 +682,6 @@
           <section class="mission_panel" aria-labelledby="mission_title">
             <div class="mission_header">
               <h2 id="mission_title">Today's Shopping List</h2>
-              <span class="budget_badge" id="budget_badge">Budget: $6</span>
             </div>
             <ul class="mission_list" id="mission_list">
               <li class="mission_item is_active" id="mission_0">
@@ -685,7 +703,6 @@
           <div class="cart_panel">
             <div class="panel_header">
               <h2>Your Shopping Cart</h2>
-              <span class="limit_note">Add the prices together</span>
             </div>
 
             <div class="canvas_frame">
