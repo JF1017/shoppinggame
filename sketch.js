@@ -1,0 +1,279 @@
+const MAX_ITEMS = 10;
+const ITEM_DATA = {
+  carrot_item: { price: 1, imageKey: "carrot", name: "carrot" },
+  cake_item: { price: 2, imageKey: "cake", name: "cake" },
+  cheese_item: { price: 2, imageKey: "cheese", name: "cheese" },
+  jam_item: { price: 3, imageKey: "jam", name: "jam" },
+  ball_item: { price: 4, imageKey: "basketball", name: "ball" },
+  lamp_item: { price: 5, imageKey: "lamp", name: "lamp" },
+  mug_item: { price: 3, imageKey: "bear", name: "mug" },
+  clip_item: { price: 2, imageKey: "clip", name: "clip" }
+};
+
+let currentSlot;
+let total;
+let answerHidden = true;
+let pictures = [];
+let formulaParts = [];
+let assets = {};
+let sparkleAngle = 0;
+
+function preload() {
+  assets.carrot = loadImage("images/carrot.png");
+  assets.basketball = loadImage("images/basketball.png");
+  assets.cheese = loadImage("images/cheese.png");
+  assets.iceCream = loadImage("images/ice_cream.png");
+  assets.shirt = loadImage("images/shirt.png");
+  assets.slippers = loadImage("images/slippers.png");
+  assets.bear = loadImage("images/bear.png");
+  assets.apple = loadImage("images/apple.png");
+  assets.cake = loadImage("images/cake.png");
+  assets.jam = loadImage("images/jam.png");
+  assets.lamp = loadImage("images/lamp.png");
+  assets.clip = loadImage("images/clip.png");
+  assets.bg = loadImage("images/shoppingcart.jpg");
+}
+
+function setup() {
+  const canvasWidth = getCanvasWidth();
+  const c = createCanvas(canvasWidth, canvasWidth * 0.66);
+  c.parent("#canvas_container");
+  c.id("myCanvas");
+  imageMode(CENTER);
+
+  currentSlot = 0;
+  total = 0;
+  updateInterface();
+}
+
+function draw() {
+  drawCartScene();
+
+  for (let i = 0; i < pictures.length; i++) {
+    pictures[i].display();
+  }
+
+  sparkleAngle += 0.018;
+}
+
+function windowResized() {
+  const canvasWidth = getCanvasWidth();
+  resizeCanvas(canvasWidth, canvasWidth * 0.66);
+}
+
+class Picture {
+  constructor(slot, graphic) {
+    this.slot = slot;
+    this.graphic = graphic;
+  }
+
+  display() {
+    const position = getSlotPosition(this.slot);
+    const itemSize = min(width * 0.14, height * 0.22, 92);
+    const bounce = sin(frameCount * 0.04 + this.slot) * 2;
+
+    noStroke();
+    fill(255, 255, 255, 170);
+    ellipse(position.x, position.y + itemSize * 0.42, itemSize * 0.72, itemSize * 0.18);
+    image(this.graphic, position.x, position.y + bounce, itemSize, itemSize);
+  }
+}
+
+function selectFunction(el) {
+  const selected = ITEM_DATA[el.value];
+
+  if (!selected || currentSlot >= MAX_ITEMS) {
+    setStatusMessage("Your cart is full. Clear the cart to start a new shopping trip.");
+    return;
+  }
+
+  currentSlot += 1;
+  total += selected.price;
+  formulaParts.push(selected.price);
+  pictures.push(new Picture(currentSlot, assets[selected.imageKey]));
+  setStatusMessage(`Added ${selected.name} for ${selected.price} dollars.`);
+  updateInterface();
+}
+
+function showAnswer() {
+  answerHidden = !answerHidden;
+  updateInterface();
+}
+
+function clearItems() {
+  pictures = [];
+  formulaParts = [];
+  total = 0;
+  currentSlot = 0;
+  answerHidden = true;
+  setStatusMessage("Cart cleared. Pick a new item to practice addition.");
+  updateInterface();
+}
+
+function updateInterface() {
+  const formula = document.getElementById("formula");
+  const totalPrice = document.getElementById("total_price");
+  const answerButton = document.getElementById("show_answer_button");
+  const cartCount = document.getElementById("cart_count");
+
+  if (formula) {
+    formula.innerHTML = formulaParts.length ? formulaParts.join(" + ") : "Choose an item";
+  }
+
+  if (totalPrice) {
+    totalPrice.innerHTML = answerHidden ? "?" : total;
+  }
+
+  if (answerButton) {
+    answerButton.innerHTML = answerHidden ? "Show Answer" : "Hide Answer";
+    answerButton.setAttribute("aria-pressed", String(!answerHidden));
+  }
+
+  if (cartCount) {
+    cartCount.innerHTML = `${currentSlot} of ${MAX_ITEMS} selected`;
+  }
+}
+
+function setStatusMessage(message) {
+  const status = document.getElementById("status_message");
+
+  if (status) {
+    status.innerHTML = message;
+  }
+}
+
+function getCanvasWidth() {
+  const container = document.getElementById("canvas_container");
+  return container ? container.offsetWidth : 600;
+}
+
+function getSlotPosition(slot) {
+  const column = (slot - 1) % 5;
+  const row = floor((slot - 1) / 5);
+  const startX = width * 0.18;
+  const gapX = width * 0.16;
+  const yPositions = [height * 0.38, height * 0.66];
+
+  return {
+    x: startX + column * gapX,
+    y: yPositions[row]
+  };
+}
+
+function drawCartScene() {
+  background(241, 249, 255);
+
+  noStroke();
+  fill(255, 244, 203);
+  ellipse(width * 0.17, height * 0.14, width * 0.18, width * 0.18);
+
+  drawShelfPattern();
+  drawCartBasket();
+  drawCounter();
+  drawFloatingShapes();
+
+  if (pictures.length === 0) {
+    drawEmptyCartMessage();
+  }
+}
+
+function drawShelfPattern() {
+  stroke(203, 222, 235);
+  strokeWeight(max(1, width * 0.003));
+
+  for (let y = height * 0.18; y < height * 0.72; y += height * 0.16) {
+    line(width * 0.08, y, width * 0.92, y);
+  }
+
+  noStroke();
+  fill(255, 132, 111, 75);
+  rect(width * 0.73, height * 0.08, width * 0.12, height * 0.08, 8);
+  fill(62, 154, 114, 75);
+  rect(width * 0.14, height * 0.68, width * 0.13, height * 0.07, 8);
+  fill(143, 78, 201, 65);
+  rect(width * 0.82, height * 0.55, width * 0.09, height * 0.08, 8);
+}
+
+function drawCartBasket() {
+  const cartLeft = width * 0.08;
+  const cartTop = height * 0.23;
+  const cartWidth = width * 0.84;
+  const cartHeight = height * 0.5;
+
+  fill(255, 255, 255, 215);
+  stroke(35, 50, 65, 52);
+  strokeWeight(max(2, width * 0.006));
+  quad(
+    cartLeft + cartWidth * 0.08,
+    cartTop,
+    cartLeft + cartWidth * 0.96,
+    cartTop,
+    cartLeft + cartWidth * 0.84,
+    cartTop + cartHeight,
+    cartLeft + cartWidth * 0.18,
+    cartTop + cartHeight
+  );
+
+  stroke(64, 85, 106, 72);
+  strokeWeight(max(1.5, width * 0.004));
+
+  for (let i = 1; i < 5; i++) {
+    const x = cartLeft + cartWidth * (0.16 + i * 0.15);
+    line(x, cartTop + height * 0.03, x - cartWidth * 0.06, cartTop + cartHeight - height * 0.03);
+  }
+
+  for (let i = 1; i < 4; i++) {
+    const y = cartTop + cartHeight * (i / 4);
+    line(cartLeft + cartWidth * 0.13, y, cartLeft + cartWidth * 0.9, y);
+  }
+
+  stroke(35, 50, 65, 130);
+  strokeWeight(max(4, width * 0.01));
+  line(cartLeft + cartWidth * 0.78, cartTop - height * 0.02, cartLeft + cartWidth * 0.98, cartTop - height * 0.12);
+
+  noStroke();
+  fill(35, 50, 65);
+  circle(cartLeft + cartWidth * 0.25, cartTop + cartHeight + height * 0.07, width * 0.075);
+  circle(cartLeft + cartWidth * 0.78, cartTop + cartHeight + height * 0.07, width * 0.075);
+  fill(255, 250, 240);
+  circle(cartLeft + cartWidth * 0.25, cartTop + cartHeight + height * 0.07, width * 0.038);
+  circle(cartLeft + cartWidth * 0.78, cartTop + cartHeight + height * 0.07, width * 0.038);
+}
+
+function drawCounter() {
+  fill(62, 154, 114);
+  noStroke();
+  rect(0, height * 0.86, width, height * 0.14);
+
+  fill(255, 250, 240, 120);
+  rect(0, height * 0.86, width, height * 0.025);
+}
+
+function drawFloatingShapes() {
+  noStroke();
+
+  for (let i = 0; i < 7; i++) {
+    const x = width * (0.08 + i * 0.14);
+    const y = height * (0.1 + 0.035 * sin(sparkleAngle + i));
+    const shapeSize = width * 0.012;
+
+    fill(i % 2 === 0 ? color(255, 132, 111, 120) : color(248, 200, 78, 145));
+    circle(x, y, shapeSize);
+  }
+}
+
+function drawEmptyCartMessage() {
+  const boxWidth = width * 0.56;
+  const boxHeight = height * 0.18;
+  const x = width * 0.5 - boxWidth / 2;
+  const y = height * 0.43 - boxHeight / 2;
+
+  noStroke();
+  fill(255, 255, 255, 230);
+  rect(x, y, boxWidth, boxHeight, 8);
+  fill(35, 50, 65);
+  textAlign(CENTER, CENTER);
+  textStyle(BOLD);
+  textSize(max(16, width * 0.035));
+  text("Pick an item to fill the cart", width * 0.5, height * 0.43);
+}
