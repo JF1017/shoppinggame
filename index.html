@@ -3,7 +3,8 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Grocery Math Cart</title>
+    <meta name="description" content="Practice number relationships, budgeting, and phonological awareness.">
+    <title>Shopping Challenge</title>
     <script src="https://cdn.jsdelivr.net/npm/p5@1.7.0/lib/p5.js"></script>
     <script src="sketch.js"></script>
     <style>
@@ -315,13 +316,44 @@
 
       .mission_item {
         display: grid;
-        grid-template-columns: auto 1fr;
+        grid-template-columns: auto auto 1fr;
         gap: 8px;
-        align-items: start;
+        align-items: center;
         color: #40556a;
         font-size: 0.98rem;
         font-weight: 500;
         line-height: 1.35;
+      }
+
+      .play_clue_button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 34px;
+        height: 34px;
+        border: 2px solid rgba(46, 125, 102, 0.22);
+        border-radius: 999px;
+        color: #215d4c;
+        background: #eefaf2;
+        cursor: pointer;
+        transition: transform 160ms ease, border-color 160ms ease, background 160ms ease;
+      }
+
+      .play_clue_button:hover {
+        border-color: rgba(46, 125, 102, 0.45);
+        background: #d8f4df;
+        transform: translateY(-1px);
+      }
+
+      .play_clue_button:focus-visible {
+        outline: 4px solid rgba(248, 200, 78, 0.75);
+        outline-offset: 2px;
+      }
+
+      .play_clue_button svg {
+        width: 18px;
+        height: 18px;
+        stroke-width: 2.4;
       }
 
       .mission_check {
@@ -371,6 +403,19 @@
         border-color: #2e7d66;
         color: #123d30;
         background: #d8f4df;
+      }
+
+      .audio_status {
+        margin: -4px 0 0;
+        min-height: 22px;
+        color: var(--muted);
+        font-size: 0.88rem;
+        font-weight: 500;
+        line-height: 1.35;
+      }
+
+      .audio_status.is_warning {
+        color: #8c2b16;
       }
 
       .canvas_frame {
@@ -531,8 +576,8 @@
       <section class="hero" aria-labelledby="page_title">
         <div>
           <p class="eyebrow">Daily grocery shopping</p>
-          <h1 id="page_title">Grocery Math Cart</h1>
-          <p class="intro">Use word clues to choose groceries, then keep the cart within budget by adding the prices.</p>
+          <h1 id="page_title">Shopping Challenge</h1>
+          <p class="intro">Practice number relationships, budgeting, and phonological awareness.</p>
         </div>
         <div class="lesson_badge" aria-label="Three word clues and a six dollar budget">
           <strong>$6</strong>
@@ -686,17 +731,39 @@
             <ul class="mission_list" id="mission_list">
               <li class="mission_item is_active" id="mission_0">
                 <span class="mission_check" aria-hidden="true">✓</span>
+                <button class="play_clue_button" type="button" onclick="speakMission(0);" aria-label="Read clue 1 aloud" title="Read clue 1 aloud">
+                  <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+                    <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                    <path d="M15.5 8.5a5 5 0 0 1 0 7"></path>
+                    <path d="M19 5a9 9 0 0 1 0 14"></path>
+                  </svg>
+                </button>
                 <span>Buy something that begins with /k/.</span>
               </li>
               <li class="mission_item" id="mission_1">
                 <span class="mission_check" aria-hidden="true">✓</span>
+                <button class="play_clue_button" type="button" onclick="speakMission(1);" aria-label="Read clue 2 aloud" title="Read clue 2 aloud">
+                  <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+                    <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                    <path d="M15.5 8.5a5 5 0 0 1 0 7"></path>
+                    <path d="M19 5a9 9 0 0 1 0 14"></path>
+                  </svg>
+                </button>
                 <span>Buy something with 3 sounds.</span>
               </li>
               <li class="mission_item" id="mission_2">
                 <span class="mission_check" aria-hidden="true">✓</span>
+                <button class="play_clue_button" type="button" onclick="speakMission(2);" aria-label="Read clue 3 aloud" title="Read clue 3 aloud">
+                  <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+                    <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                    <path d="M15.5 8.5a5 5 0 0 1 0 7"></path>
+                    <path d="M19 5a9 9 0 0 1 0 14"></path>
+                  </svg>
+                </button>
                 <span>Buy something with 4 sounds and stay within budget.</span>
               </li>
             </ul>
+            <p class="audio_status" id="audio_status" aria-live="polite"></p>
             <p class="mission_feedback" id="mission_feedback" aria-live="polite">Start with clue 1: choose an item that begins with /k/.</p>
           </section>
 

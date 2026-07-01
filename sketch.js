@@ -14,18 +14,21 @@ const ITEM_DATA = {
 const MISSIONS = [
   {
     text: "Buy something that begins with /k/.",
+    speechText: "Buy something that begins with the k sound.",
     success: "Good match. That word begins with /k/.",
     hint: "Look for a word that starts with the /k/ sound.",
     test: (item) => item.firstSound === "k"
   },
   {
     text: "Buy something with 3 sounds.",
+    speechText: "Buy something with three sounds.",
     success: "Good listening. That word has 3 sounds.",
     hint: "Open Sound clues and count the sounds.",
     test: (item) => item.soundCount === 3
   },
   {
     text: "Buy something with 4 sounds and stay within budget.",
+    speechText: "Buy something with four sounds and stay within budget.",
     success: "List complete. Now add the prices and check your total.",
     hint: "Find a 4-sound word, then check if its price fits the budget.",
     test: (item) => item.soundCount === 4
@@ -40,6 +43,8 @@ let pictures = [];
 let formulaParts = [];
 let assets = {};
 let sparkleAngle = 0;
+let currentUtterance = null;
+let availableVoices = [];
 
 function preload() {
   assets.carrot = loadImage("images/carrot.png");
@@ -67,6 +72,7 @@ function setup() {
   currentSlot = 0;
   missionIndex = 0;
   total = 0;
+  prepareSpeechVoices();
   updateInterface();
 }
 
@@ -153,6 +159,77 @@ function clearItems() {
   updateInterface();
 }
 
+function speakMission(index) {
+  const mission = MISSIONS[index];
+
+  if (!mission) {
+    return;
+  }
+
+  if (!isSpeechSupported()) {
+    setAudioStatus("Audio read-aloud is not available in this browser.", "warning");
+    return;
+  }
+
+  prepareSpeechVoices();
+  window.speechSynthesis.cancel();
+
+  currentUtterance = new window.SpeechSynthesisUtterance(mission.speechText);
+  currentUtterance.lang = "en-US";
+  currentUtterance.rate = 0.86;
+  currentUtterance.pitch = 1.08;
+
+  const voice = getPreferredVoice();
+
+  if (voice) {
+    currentUtterance.voice = voice;
+  }
+
+  currentUtterance.onstart = () => {
+    setAudioStatus(`Reading clue ${index + 1} aloud.`, "neutral");
+  };
+
+  currentUtterance.onend = () => {
+    currentUtterance = null;
+    setAudioStatus("", "neutral");
+  };
+
+  currentUtterance.onerror = () => {
+    currentUtterance = null;
+    setAudioStatus("Audio could not play. Check browser sound settings and try again.", "warning");
+  };
+
+  window.speechSynthesis.speak(currentUtterance);
+  setScreenReaderStatus(`Reading clue ${index + 1} aloud.`);
+}
+
+function isSpeechSupported() {
+  return typeof window !== "undefined" &&
+    "speechSynthesis" in window &&
+    typeof window.SpeechSynthesisUtterance !== "undefined";
+}
+
+function prepareSpeechVoices() {
+  if (!isSpeechSupported()) {
+    return;
+  }
+
+  availableVoices = window.speechSynthesis.getVoices();
+  window.speechSynthesis.onvoiceschanged = () => {
+    availableVoices = window.speechSynthesis.getVoices();
+  };
+}
+
+function getPreferredVoice() {
+  if (!availableVoices.length) {
+    availableVoices = window.speechSynthesis.getVoices();
+  }
+
+  return availableVoices.find((voice) => voice.lang === "en-US") ||
+    availableVoices.find((voice) => voice.lang && voice.lang.startsWith("en")) ||
+    null;
+}
+
 function updateInterface() {
   const formula = document.getElementById("formula");
   const totalPrice = document.getElementById("total_price");
@@ -199,15 +276,30 @@ function updateInterface() {
 function setStatusMessage(message, state = "neutral") {
   const status = document.getElementById("status_message");
 
-  if (status) {
-    status.innerHTML = message;
-  }
+  setScreenReaderStatus(message);
 
   const feedback = document.getElementById("mission_feedback");
 
   if (feedback) {
     feedback.innerHTML = message;
     setFeedbackState(feedback, state);
+  }
+}
+
+function setScreenReaderStatus(message) {
+  const status = document.getElementById("status_message");
+
+  if (status) {
+    status.innerHTML = message;
+  }
+}
+
+function setAudioStatus(message, state = "neutral") {
+  const audioStatus = document.getElementById("audio_status");
+
+  if (audioStatus) {
+    audioStatus.innerHTML = message;
+    audioStatus.classList.toggle("is_warning", state === "warning");
   }
 }
 
